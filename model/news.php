@@ -7,12 +7,21 @@ class News {
     public $news_title;
     public $news_image;
     public $news_details;
+    public $newsDetails;
+
     public $database;
+public $timessstamp;
+
 
     function __construct()
     {
+       
         $this->database = new DBConfig();
 
+    }
+    function setTime(){
+        //$this->timessstamp=date();
+       // $milliseconds = round(microtime(true) * 1000);
     }
 
     function updateRow()
@@ -22,6 +31,7 @@ class News {
             $sql = "update pnews set category=?,region=?, title=? , info=? WHERE id=?";
             $statement= $pdo->prepare($sql);
             $statement->execute([$this->news_category, $this->news_region, $this->news_title, $this->news_details, $this->news_id]);
+            
             return true;
         } catch (PDOException $ex) {
             return false;
@@ -29,6 +39,7 @@ class News {
 
     }
 
+    /*
     function getRows()
     {
         $pdo= $this->database->connect();
@@ -37,18 +48,34 @@ class News {
         $rows= $statement->fetchAll(PDO::FETCH_OBJ);
         return $rows;
     }
+    */
+
+
+
+    function getRows()
+    {
+        $newsObj=new News();
+        $pdo= $this->database->connect();
+        $statement= $pdo->prepare("select id,title,date from pnews");
+        $statement->execute();
+        $rows= (object) array("newstitles"=>$statement->fetchAll(PDO::FETCH_ASSOC));
+  
+
+        return $rows;
+    }
     function getSingleRow($id)
     {
         $pdo= $this->database->connect();
         $statement= $pdo->prepare("select * from pnews where id=?");
         $statement->execute([$id]);
-        $row= $statement->fetchAll(PDO::FETCH_OBJ);
-        return $row;
+        
+        $row= array("newsDetails"=> $statement->  fetch( PDO::FETCH_OBJ)) ;
+        return $row  ;
     }
     function getRowsByCategoryAndRegion($category,$region)
     {
         $pdo= $this->database->connect();
-        $statement= $pdo->prepare("select id,title from pnews where category=? and region=?");
+        $statement= $pdo->prepare("select id,title,date from pnews where category=? and region=?");
         $statement->execute([$category, $region]);
         $rows= $statement->fetchAll(PDO::FETCH_OBJ);
         return $rows;
@@ -56,15 +83,15 @@ class News {
     function getRowsByCategory($category)
     {
         $pdo= $this->database->connect();
-        $statement= $pdo->prepare("select id,title from pnews where category=?");
+        $statement= $pdo->prepare("select id,title,date from pnews where category=?");
         $statement->execute([$category]);
-        $rows= $statement->fetchAll(PDO::FETCH_OBJ);
+        $rows= (object) array("newsByCategory"=>$statement->fetchAll(PDO::FETCH_OBJ));
         return $rows;
     }
     function getRowsByRegion($region)
     {
         $pdo= $this->database->connect();
-        $statement= $pdo->prepare("select id,title from pnews where  region=?");
+        $statement= $pdo->prepare("select id,title,date from pnews where  region=?");
         $statement->execute([$region]);
         $rows= $statement->fetchAll(PDO::FETCH_OBJ);
         return $rows;
@@ -97,6 +124,15 @@ class News {
             return false;
         }
 
+    }
+
+    function getlastTenRows()
+    {
+        $pdo= $this->database->connect();
+        $statement= $pdo->prepare("select id,title,date from pnews  ORDER BY date DESC  limit 10");
+        $statement->execute();
+        $rows= (object) array("lastnews"=>$statement->fetchAll(PDO::FETCH_ASSOC));
+        return $rows;
     }
 
 }

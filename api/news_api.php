@@ -70,7 +70,7 @@ else if($_SERVER['REQUEST_METHOD']=="DELETE"){
 }
 else if(isset($_GET)){
     if (isset($_GET['id'])){
-        echo json_encode ($news_model->getSingleRow($_GET['id']));
+        echo  json_encode (  $news_model->  getSingleRow($_GET['id']) ,JSON_FORCE_OBJECT ) ;
     }
     else if (isset($_GET['category']) && isset($_GET['region'])){
         echo json_encode ($news_model->getRowsByCategoryAndRegion($_GET['category'], $_GET['region']));
@@ -85,7 +85,10 @@ else if(isset($_GET)){
 
     }
     else {
-        echo json_encode ($news_model->getRows());
+        //getlastTenRows
+        //echo json_encode ($news_model->getRows());
+        echo json_encode ($news_model->getlastTenRows());
+
     }
 
 
